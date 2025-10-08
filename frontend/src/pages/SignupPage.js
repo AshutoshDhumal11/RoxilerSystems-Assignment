@@ -21,8 +21,7 @@ const SignupPage = () => {
       await authAPI.signup(
         formData.name,
         formData.email,
-        formData,
-        password,
+        formData.password,
         formData.address
       );
       navigate("/login");

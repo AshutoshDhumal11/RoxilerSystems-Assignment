@@ -1,4 +1,3 @@
-import { useState } from "react";
 import "./App.css";
 import { Route, Router, Routes } from "react-router-dom";
 import Layout from "./components/common/Layout";
@@ -6,6 +5,9 @@ import ProtectedRoute from "./components/common/ProtectedRoute";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import UserPage from "./pages/UserPage";
+import AdminPage from "./pages/AdminPage";
+import StoreOwnerPage from "./pages/StoreOwnerPage";
+import Home from "./pages/Home";
 
 function App() {
   return (

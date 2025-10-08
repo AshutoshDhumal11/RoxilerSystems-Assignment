@@ -22,7 +22,7 @@ export const authAPI = {
 
 // Admin API
 export const adminAPI = {
-  getDashboard: (token) =>
+  getDashboardStats: (token) =>
     api.get("/admin/dashboard", {
       headers: { Authorization: `Bearer ${token}` },
     }),
@@ -36,11 +36,11 @@ export const adminAPI = {
       headers: { Authorization: `Bearer ${token}` },
       params: filters,
     }),
-  addUser: (token, userData) =>
+  createUser: (token, userData) =>
     api.post("/admin/users", userData, {
       headers: { Authorization: `Bearer ${token}` },
     }),
-  addStore: (token, storeData) =>
+  createStore: (token, storeData) =>
     api.post("/admin/stores", storeData, {
       headers: { Authorization: `Bearer ${token}` },
     }),
@@ -67,26 +67,26 @@ export const storeAPI = {
 
 // Interceptors to add token to requests
 api.interceptors.request.use(
-    (config) => {
-        const token = localStorage.getItem("token");
-        if(token) {
-            config.headers.Authorization = `Bearer ${token}`
-        }
-        return config;
-    },
-    (error) => {
-        return Promise.reject(error);
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
 );
 
 // Interceptors to handle resposnes and errors
 api.interceptors.response.use(
-    (response) => response,
-    (error) => {
-        if(error.response && error.response.status === 401) {
-            localStorage.removeItem("token");
-            window.location.href = "/login";
-        }
-        return Promise.reject(error);
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem("token");
+      window.location.href = "/login";
     }
-)
+    return Promise.reject(error);
+  }
+);

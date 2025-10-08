@@ -3,45 +3,40 @@ const { createContext } = require("react");
 const AuthContext = createContext();
 
 export const useAuth = () => {
-    return useContext(AuthContext);
-}
+  return useContext(AuthContext);
+};
 
 export const AuthProvider = ({ children }) => {
-    const [ user, setUser ] = useState(null);
-    const [ loading, setLoading ] = useState(true);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const token = localStorage.getItem("token");
-        if(token) {
-            authAPI.getMe(token).then(response => {
-                setUser(response.data.user);
-                setLoading(false);
-            }).catch(() => {
-                localStorage.removeItem("token");
-                setLoading(false);
-            })
-        } else {
-            setLoading(false)
-        }
-    }, []);
-
-    const login = (user, token) => {
-        localStorage.setItem("token", token);
-        setUser(user);
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const userData = localStorage.getItem("user");
+    if (token && userData) {
+      setUser(userData);
     }
+    setLoading(false);
+  }, []);
 
-    const logout = () => {
-        localStorage.removeItem("token");
-        setUser(null);
-    }
+  const login = (user, token) => {
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", user);
+    setUser(user);
+  };
 
-    const value = {
-        user, login, logout, loading
-    }
+  const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setUser(null);
+  };
 
-    return (
-        <AuthContext.Provider value={value}>
-            { children }
-        </AuthContext.Provider>
-    )
-}
+  const value = {
+    user,
+    login,
+    logout,
+    loading,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};
