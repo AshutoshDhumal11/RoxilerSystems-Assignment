@@ -1,14 +1,48 @@
-import { useState } from 'react'
-import './App.css'
+import { useState } from "react";
+import "./App.css";
+import { Route, Router, Routes } from "react-router-dom";
+import Layout from "./components/common/Layout";
+import ProtectedRoute from "./components/common/ProtectedRoute";
 
 function App() {
-
-
   return (
-    <div>
-      
-    </div>
-  )
+    <Router>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute allowedRoles={["SYSTEM_ADMIN"]}>
+                <AdminPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/user"
+            element={
+              <ProtectedRoute allowedRoles={["NORMAL_USER"]}>
+                <UserPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/store-owner"
+            element={
+              <ProtectedRoute allowedRoles={["STORE_OWNER"]}>
+                <StoreOwnerPage />
+              </ProtectedRoute>
+            }
+          ></Route>
+        </Routes>
+      </Layout>
+    </Router>
+  );
 }
 
-export default App
+export default App;
