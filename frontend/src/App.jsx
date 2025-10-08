@@ -3,6 +3,9 @@ import "./App.css";
 import { Route, Router, Routes } from "react-router-dom";
 import Layout from "./components/common/Layout";
 import ProtectedRoute from "./components/common/ProtectedRoute";
+import LoginPage from "./pages/LoginPage";
+import SignupPage from "./pages/SignupPage";
+import UserPage from "./pages/UserPage";
 
 function App() {
   return (
@@ -10,8 +13,8 @@ function App() {
       <Layout>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
 
           <Route
             path="/admin"

@@ -8,8 +8,8 @@ const api = axios.create({
 // Auth API
 export const authAPI = {
   login: (email, password) => api.post("/auth/login", { email, password }),
-  signup: (name, email, password, address, role) =>
-    api.post("/auth/signup", { name, email, password, address, role }),
+  signup: (name, email, password, address) =>
+    api.post("/auth/signup", { name, email, password, address }),
   updatePassword: (currentPassword, newPassword, token) =>
     api.patch(
       "/auth/password",
