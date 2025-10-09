@@ -73,13 +73,13 @@ const StoreList = ({ stores, onSearch }) => {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {stores.map((store) => {
+          {stores.map((store) => (
             <StoreCard
               key={store.id}
               store={store}
               onRate={handleRatingSubmit}
-            />;
-          })}
+            />
+          ))}
         </div>
       )}
     </div>
