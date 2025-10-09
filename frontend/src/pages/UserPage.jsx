@@ -26,12 +26,12 @@ const UserPage = () => {
 
   const handleSearch = (newFilters) => {
     setFilters(newFilters);
-  }
+  };
 
   return (
     <div>
-        <h2>User Dashboard</h2>
-        <StoreList stores={stores} onSearch={handleSearch}/>
+      <h2>User Dashboard</h2>
+      <StoreList stores={stores} onSearch={handleSearch} />
     </div>
   );
 };
