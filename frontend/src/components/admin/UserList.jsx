@@ -126,9 +126,14 @@ const UserList = () => {
                         {user.role}
                       </span>
                     </td>
-                    <td className="px-6 py-3 text-left text-left whitespace-nowrap text-sm font-medium text-gray-900">
-                      {user.averageRating
-                        ? user.averageRating.toFixed(1)
+                    <td className="px-6 py-3 text-left whitespace-nowrap text-sm font-medium text-gray-900">
+                      {user.ownedStore[0]?.ratings
+                        ? `${
+                            user.ownedStore[0]?.ratings.reduce(
+                              (sum, r) => sum + r.rating,
+                              0
+                            ) / user.ownedStore[0]?.ratings.length
+                          }`
                         : "N/A"}
                     </td>
                   </tr>
