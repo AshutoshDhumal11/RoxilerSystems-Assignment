@@ -1,6 +1,9 @@
+import { useState } from "react";
 import AdminDashboard from "../components/admin/AdminDashboard";
 import UserList from "../components/admin/UserList";
-import StoreList from "../components/user/StoreList";
+import AddUserForm from "../components/admin/AddUserForm";
+import AddStoreForm from "../components/admin/AddStoreForm";
+import StoreList from "../components/admin/StoreList";
 
 const AdminPage = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -38,7 +41,7 @@ const AdminPage = () => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
+              className={`whitespace-nowrap cursor-pointer py-4 px-1 border-b-2 font-medium text-sm ${
                 activeTab === tab.id
                   ? "border-blue-500 text-blue-600"
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"

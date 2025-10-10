@@ -7,62 +7,97 @@ const api = axios.create({
 
 // Auth API
 export const authAPI = {
-  login: (email, password) => api.post("/auth/login", { email, password }),
-  signup: (name, email, password, address) =>
-    api.post("/auth/signup", { name, email, password, address }),
-  updatePassword: (currentPassword, newPassword, token) =>
-    api.patch(
-      "/auth/password",
-      { currentPassword, newPassword },
-      { headers: { Authorization: `Bearer ${token}` } }
-    ),
-  getMe: (token) =>
-    api.get("/auth/me", { headers: { Authorization: `Bearer ${token}` } }),
+  login: async (email, password) => {
+    const response = await api.post("/auth/login", { email, password });
+    return response.data;
+  },
+  signup: async (userData) => {
+    const response = await api.post("/auth/signup", userData);
+    return response.data;
+  },
+  updatePassword: async (currentPassword, newPassword) => {
+    try {
+      const response = await api.patch("/auth/password", {
+        currentPassword,
+        newPassword,
+      });
+      return {
+        success: true,
+        data: response.data,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.error,
+      };
+    }
+  },
 };
 
 // Admin API
 export const adminAPI = {
-  getDashboardStats: (token) =>
-    api.get("/admin/dashboard", {
-      headers: { Authorization: `Bearer ${token}` },
-    }),
-  getUsers: (token, filters) =>
+  getDashboardStats: () => api.get("/admin/dashboard"),
+  getUsers: (filters) =>
     api.get("/admin/users", {
-      headers: { Authorization: `Bearer ${token}` },
       params: filters,
     }),
-  getStores: (token, filters) =>
+  getStores: (filters) =>
     api.get("/admin/stores", {
-      headers: { Authorization: `Bearer ${token}` },
       params: filters,
     }),
-  createUser: (token, userData) =>
-    api.post("/admin/users", userData, {
-      headers: { Authorization: `Bearer ${token}` },
-    }),
-  createStore: (token, storeData) =>
-    api.post("/admin/stores", storeData, {
-      headers: { Authorization: `Bearer ${token}` },
-    }),
+  createUser: async (userData) => {
+    try {
+      const response = await api.post("/admin/users", userData);
+
+      if (response.status === 400) {
+        return {
+          success: false,
+          error: response.error,
+        };
+      }
+      return {
+        success: true,
+        message: "User added successfully",
+      };
+    } catch (err) {
+      return {
+        success: false,
+        error: err.response?.data?.error,
+      };
+    }
+  },
+  createStore: async (storeData) => {
+    try {
+      const response = await api.post("/admin/stores", storeData);
+
+      if (response.status === 400) {
+        return {
+          success: false,
+          error: response.error,
+        };
+      }
+      return {
+        success: true,
+        message: "Store added successfully",
+      };
+    } catch (err) {
+      return {
+        success: false,
+        error: err.response?.data?.error,
+      };
+    }
+  },
 };
 
 // Store API for normal users and store owners
 export const storeAPI = {
-  getStores: (token, filters) =>
+  getStores: (filters) =>
     api.get("/stores", {
-      headers: { Authorization: `Bearer ${token}` },
       params: filters,
     }),
-  rateStore: (token, storeId, rating) =>
-    api.post(
-      `/stores/${storeId}/rate`,
-      { rating },
-      { headers: { Authorization: `Bearer ${token}` } }
-    ),
-  getOwnerDashboard: (token) =>
-    api.get("/stores/owner/dashboard", {
-      headers: { Authorization: `Bearer ${token}` },
-    }),
+  rateStore: (storeId, rating) =>
+    api.post(`/stores/${storeId}/rate`, { rating }),
+  getOwnerDashboard: () => api.get("/stores/owner/dashboard"),
 };
 
 // Interceptors to add token to requests
@@ -83,8 +118,9 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
+    if (error.response && error.response.status === 402) {
       localStorage.removeItem("token");
+      localStorage.removeItem("user");
       window.location.href = "/login";
     }
     return Promise.reject(error);

@@ -1,4 +1,5 @@
-const { createContext } = require("react");
+import { createContext, useContext, useEffect, useState } from "react";
+import { authAPI } from "../utils/api";
 
 const AuthContext = createContext();
 
@@ -19,10 +20,38 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  const login = (user, token) => {
-    localStorage.setItem("token", token);
-    localStorage.setItem("user", JSON.stringify(user));
-    setUser(user);
+  const login = async (email, password) => {
+    try {
+      const data = await authAPI.login(email, password);
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      setUser(data.user);
+
+      return { success: true };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.error || "Login failed",
+      };
+    }
+  };
+
+  const signup = async (userData) => {
+    try {
+      await authAPI.signup(userData);
+      return { success: true };
+    } catch (error) {
+      console.log(error);
+      return {
+        success: false,
+        error: error.response?.data?.error || "Signup failed!",
+      };
+    }
+  };
+
+  const updatePassword = async (currentPassword, newPassword) => {
+    const response = await authAPI.updatePassword(currentPassword, newPassword);
+    return response;
   };
 
   const logout = () => {
@@ -34,6 +63,8 @@ export const AuthProvider = ({ children }) => {
   const value = {
     user,
     login,
+    signup,
+    updatePassword,
     logout,
     loading,
   };

@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { authAPI } from "../utils/api";
+import { useState } from "react";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -13,18 +14,28 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    try {
-      const response = await authAPI.login(email, password);
-      login(response.data.user, response.data.token);
-      navigate("/");
-    } catch (err) {
-      setError(err.response?.data?.error || "Login failed");
+
+    const response = await login(email, password);
+
+    if (response.success) {
+      const user = JSON.parse(localStorage.getItem("user"));
+
+      if (user.role === "SYSTEM_ADMIN") {
+        navigate("/admin");
+      } else if (user.role === "STORE_OWNER") {
+        navigate("/store-owner");
+      } else {
+        navigate("/user");
+      }
+    } else {
+      setError(response.error);
     }
+
     setLoading(false);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:pax-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-fill space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
@@ -37,8 +48,8 @@ const LoginPage = () => {
               {error}
             </div>
           )}
-          <div className="rounded-md shadow-sm -space-y-px">
-            <div>
+          <div className="rounded-md">
+            <div className="flex flex-col gap-4">
               <input
                 name="email"
                 type="email"
@@ -64,7 +75,7 @@ const LoginPage = () => {
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+              className="group cursor-pointer relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
             >
               {loading ? "Logging in..." : "Login"}
             </button>
@@ -75,7 +86,7 @@ const LoginPage = () => {
               to="/signup"
               className="font-medium text-blue-600 hover:text-blue-500"
             >
-              Don't have an accout? Sign up
+              Don't have an account? Sign up
             </Link>
           </div>
         </form>

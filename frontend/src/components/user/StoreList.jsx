@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import StoreCard from "./StoreCard";
 import { storeAPI } from "../../utils/api";
 
-const StoreList = ({ stores, onSearch }) => {
+const StoreList = () => {
   const [stores, setStores] = useState([]);
   const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState({
@@ -17,11 +17,8 @@ const StoreList = ({ stores, onSearch }) => {
   const fetchStores = async () => {
     setLoading(true);
     try {
-      const response = await storeAPI.getStores(
-        localStorage.getItem("token"),
-        filters
-      );
-      setStores(response.data);
+      const response = await storeAPI.getStores(filters);
+      setStores(response.data.storesWithRatings);
     } catch (err) {
       console.error("Error fetching stores:", err);
     } finally {

@@ -1,5 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { authAPI } from "../utils/api";
+import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
 
 const SignupPage = () => {
   const [formData, setFormData] = useState({
@@ -8,8 +10,10 @@ const SignupPage = () => {
     password: "",
     address: "",
   });
-  const [error, setError] = useState("");
+  const [error, setError] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  const { signup } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -19,14 +23,18 @@ const SignupPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    try {
-      await authAPI.signup(formData);
+    setError([]);
+    const response = await signup(formData);
+
+    if (response.success) {
       navigate("/login");
-    } catch (err) {
-      setError(err.response?.data?.error || "Signup failed");
+    } else {
+      setError(response.error);
     }
+
     setLoading(false);
   };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-4 lg:px-8">
       <div className="max-w-md w-full space-y-8">
@@ -36,9 +44,11 @@ const SignupPage = () => {
           </h2>
         </div>
         <form onSubmit={handleSubmit} className="mt-8 space-y-8">
-          {error && (
+          {error.length > 0 && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-              {error}
+              {error.map((err, index) => (
+                <div key={index}>{err}</div>
+              ))}
             </div>
           )}
 
@@ -98,7 +108,7 @@ const SignupPage = () => {
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+              className="group cursor-pointer relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
             >
               {loading ? "Creating an account..." : "Sign up"}
             </button>

@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { authAPI } from "../../utils/api";
+import { useAuth } from "../../context/AuthContext";
 
 const PasswordUpdate = () => {
   const [formData, setFormData] = useState({
@@ -8,44 +10,49 @@ const PasswordUpdate = () => {
   });
 
   const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  const { updatePassword } = useAuth();
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: [e.target.value],
+      [e.target.name]: e.target.value,
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError([]);
+    setMessage("");
+
     if (formData.newPassword !== formData.confirmPassword) {
-      setError("New passwords do not match");
+      setError(["New passwords do not match"]);
       return;
     }
 
     setLoading(true);
 
-    try {
-      const response = await authAPI.updatePassword(
-        currentPassword,
-        newpassword
-      );
-      if (response.status === 200) {
-        setMessage("Password updated successfully");
-        setFormData({
-          currentPassword: "",
-          newPassword: "",
-          confirmPassword: "",
-        });
-      }
-    } catch (err) {
-      setError(err.response?.data?.error || "Password update failed");
+    const response = await updatePassword(
+      formData.currentPassword,
+      formData.newPassword
+    );
+
+    if (response.success) {
+      setMessage(["Password updated successfully"]);
+      setFormData({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+    } else {
+      setError(response.error);
     }
 
     setLoading(false);
   };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {message && (
@@ -54,9 +61,11 @@ const PasswordUpdate = () => {
         </div>
       )}
 
-      {error && (
+      {error.length > 0 && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-          {error}
+          {error.map((err, index) => (
+            <div key={index}>{err}</div>
+          ))}
         </div>
       )}
 
@@ -113,7 +122,7 @@ const PasswordUpdate = () => {
       <button
         type="submit"
         disabled={loading}
-        className="bg-blue-600 text-white pxa-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
+        className="bg-blue-600 text-white cursor-pointer px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
       >
         {loading ? "Updating..." : "Update Password"}
       </button>

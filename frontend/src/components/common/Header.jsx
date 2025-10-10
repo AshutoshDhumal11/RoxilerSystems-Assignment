@@ -38,7 +38,7 @@ const Header = () => {
                   </span>
                   <button
                     onClick={handleLogout}
-                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium"
+                    className="bg-red-500 hover:bg-red-600 cursor-pointer text-white px-4 py-2 rounded-md text-sm font-medium"
                   >
                     Logout
                   </button>
