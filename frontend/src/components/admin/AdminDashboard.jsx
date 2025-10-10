@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { adminAPI } from "../../utils/api";
 
 const AdminDashboard = () => {
@@ -12,9 +12,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await adminAPI.getDashboardStats(
-          localStorage.getItem("token")
-        );
+        const response = await adminAPI.getDashboardStats();
         setStats(response.data);
       } catch (err) {
         console.error("Error fetching admin stats", err);
